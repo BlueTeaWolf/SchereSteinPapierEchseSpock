@@ -44,8 +44,8 @@ public class Game {
 
     private Player currentWinner() {
         Player winner = Arrays.stream(players)
-            .max(Comparator.comparingInt(candidate -> candidate.getScore()))
-            .orElseThor(IllegalStateException::new); /* unreachable */
+            .max(Comparator.comparingInt(Player::getScore))
+            .orElseThrow(IllegalStateException::new); /* unreachable */
        if (checkForMultipleWinners(winner)) {
            return null;
        }
@@ -55,7 +55,7 @@ public class Game {
     private boolean checkForMultipleWinners(Player oneWinner) {
         int winners = 0;    
         for (Player player : players) {
-            if (player.getScore() == winner.getScore() && winners++ == 1) {
+            if (player.getScore() == oneWinner.getScore() && winners++ == 1) {
                 return true;
             }
         }

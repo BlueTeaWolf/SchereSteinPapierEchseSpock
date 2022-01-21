@@ -1,3 +1,7 @@
+package gui.view;
+
+import java.awt.Container;
+
 public interface View {
-    void renderInto(JPanel panel);
+    void renderInto(Container panel);
 }

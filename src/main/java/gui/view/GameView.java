@@ -1,11 +1,24 @@
-import javax.swing.JPanel;
+package gui.view;
 
+import game.Auswahl;
 import game.Controller;
 import game.GameVisitor;
+import game.MatchResult;
 import game.Player;
 import gui.Gui;
 import gui.image.ImageButton;
 import gui.image.ImageFile;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.GridLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class GameView implements View, GameVisitor {
     private static final ImageFile IMAGE_FILE = new ImageFile("images/icons.png");
@@ -22,7 +35,7 @@ public class GameView implements View, GameVisitor {
     }
 
     @Override
-    public void renderInto(JPanel panel) {
+    public void renderInto(Container panel) {
         panel.setLayout(new BorderLayout());
         panel.add(top(), BorderLayout.PAGE_START);
         JPanel buttons = new JPanel();

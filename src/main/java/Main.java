@@ -7,7 +7,6 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-
         JFrame.setDefaultLookAndFeelDecorated( true );
         FlatDarculaLaf.setup();
         Controller controller = new Controller();

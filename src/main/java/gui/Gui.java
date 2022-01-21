@@ -1,22 +1,15 @@
 package gui;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import game.*;
+import game.Controller;
 import gui.view.View;
+import gui.view.WelcomeView;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
 
-import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.RootPaneUI;
-import javax.swing.plaf.metal.DefaultMetalTheme;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.*;
-import java.awt.image.CropImageFilter;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageProducer;
-
-public class Gui extends JFrame implements GameVisitor {
-    private View view = new WelcomeView();
+public class Gui extends JFrame {
+    private View view;
 
     {
         UIManager.put("Button.font", new Font("Arial", Font.PLAIN, 12));
@@ -26,6 +19,7 @@ public class Gui extends JFrame implements GameVisitor {
         view = new WelcomeView(controller, this);
         setTitle("Schere, Stein, Papier, Echse und Spock");
         setSize(1300, 450);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         getRootPane().setBackground(Color.decode("#202225"));
     }
 
@@ -41,6 +35,7 @@ public class Gui extends JFrame implements GameVisitor {
     }
 
     private void setContentDefaults() {
+        getContentPane().removeAll();
         getContentPane().setForeground(Color.white);
     }
 
