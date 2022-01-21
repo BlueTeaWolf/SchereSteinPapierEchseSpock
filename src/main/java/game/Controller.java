@@ -1,10 +1,16 @@
 package game;
 
 public class Controller {
-    private final Game game;
+    private Game running;
 
-    public Controller(Game game) {
-        this.game = game;
+    private void setRunning(Game running) {
+        this.running = running;
+    }
+
+    public Game newGame() {
+        Game game = new Game();
+        setRunning(game);
+        return game;
     }
 
     public void generateMove(Auswahl auswahl){
@@ -12,5 +18,4 @@ public class Controller {
         Auswahl computer = Auswahl.values()[zufallsZahl];
         game.draft(auswahl, computer);
     }
-
 }

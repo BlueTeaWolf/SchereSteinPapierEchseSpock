@@ -10,9 +10,8 @@ public class Main {
 
         JFrame.setDefaultLookAndFeelDecorated( true );
         FlatDarculaLaf.setup();
-        Game game = new Game();
-        Controller controller = new Controller(game);
-        game.setVisitor(new Gui(controller));
-        game.start();
+        Controller controller = new Controller();
+        Gui gui = new Gui(controller);
+        gui.showToScreen();
     }
 }
