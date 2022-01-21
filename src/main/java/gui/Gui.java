@@ -42,5 +42,6 @@ public class Gui extends JFrame {
     public void applyView() {
         setContentDefaults();
         view.renderInto(getContentPane());
+        getContentPane().repaint();
     }
 }

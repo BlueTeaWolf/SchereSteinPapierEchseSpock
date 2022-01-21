@@ -7,7 +7,7 @@ import game.MatchResult;
 import game.Player;
 import gui.Gui;
 import gui.image.ImageButton;
-import gui.image.ImageFile;
+import gui.image.TextureFile;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class GameView implements View, GameVisitor {
-    private static final ImageFile IMAGE_FILE = new ImageFile("images/icons.png");
+    private static final TextureFile IMAGE_FILE = new TextureFile("images/icons.png");
 
     private final Controller controller;
     private final Gui gui;

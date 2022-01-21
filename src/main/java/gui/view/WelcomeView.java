@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -43,9 +44,16 @@ public class WelcomeView implements View {
     }
 
     private NumberFormatter roundFormatter() {
-        NumberFormatter formatter = new NumberFormatter(NumberFormat.getInstance());
+        NumberFormatter formatter = new NumberFormatter(NumberFormat.getInstance()) {
+            @Override
+            public Object stringToValue(String text) throws ParseException {
+                if (text.length() == 0)
+                    return null;
+                return super.stringToValue(text);
+            }
+        };;
         formatter.setValueClass(Integer.class);
-        formatter.setMinimum(0);
+        formatter.setMinimum(1);
         formatter.setMaximum(200);
         formatter.setAllowsInvalid(false);
         formatter.setCommitsOnValidEdit(true);
@@ -55,12 +63,13 @@ public class WelcomeView implements View {
     @Override
     public void renderInto(Container panel) {
         panel.setLayout(new GridBagLayout());
-        panel.add(text(), new GridArea().height(6).width(2).fill(GridArea.FillMode.BOTH).insets(20, 0, 80, 0));
+        panel.add(text(), new GridArea().height(6).width(2).insets(20, 0, 80, 0));
         panel.add(new JLabel("Rounds: "), new GridArea().offsetY(7));
         JFormattedTextField rounds = roundField();
         panel.add(rounds, new GridArea().offsetY(7));
-        JButton startButton = new JButton(text.equals(WELCOME_TEXT) ? "Spiele" : "Nochmal spielen");
-        startButton.addActionListener(e -> startGame((Integer) rounds.getValue()));
+        JButton startButton = new JButton(text.equals(WELCOME_TEXT) ? "Spielen" : "Nochmal spielen");
+        startButton.addActionListener(event -> startGame((Integer) rounds.getValue()));
+        rounds.addActionListener(event -> startButton.doClick());
         panel.add(startButton, new GridArea().offsetY(8).width(2).verticalInsets(15, 0));
     }
 
@@ -71,8 +80,8 @@ public class WelcomeView implements View {
         return rounds;
     }
 
-    private void startGame(int maxRounds) {
-        Game game = controller.newGame(maxRounds);
+    private void startGame(Integer maxRounds) {
+        Game game = controller.newGame(maxRounds == null ? 3 : maxRounds);
         GameView view = new GameView(controller, gui);
         game.setVisitor(view);
         gui.setView(view);

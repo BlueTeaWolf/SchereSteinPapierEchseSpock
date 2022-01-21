@@ -1,6 +1,5 @@
 package game;
 
-import javax.swing.*;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
@@ -8,21 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Auswahl {
-    Stein(80, 350),
+    Stein(60, 350),
     Papier(430, 350),
     Schere(860, 350),
-    Echse(1310, 350),
-    Spock(1690, 350);
+    Echse(1260, 350),
+    Spock(1660, 350);
 
     static {
-        Schere.setAuswahl(Echse, Papier);
-        Stein.setAuswahl(Schere, Echse);
-        Papier.setAuswahl(Spock, Stein);
-        Echse.setAuswahl(Spock, Papier);
-        Spock.setAuswahl(Schere, Stein);
+        Schere.setWinsAgainst(Echse, Papier);
+        Stein.setWinsAgainst(Schere, Echse);
+        Papier.setWinsAgainst(Spock, Stein);
+        Echse.setWinsAgainst(Spock, Papier);
+        Spock.setWinsAgainst(Schere, Stein);
     }
 
-    private List<Auswahl> auswahl;
+    private List<Auswahl> winsAgainst;
     private final int x, y = 100, width, height = 440 - y;
 
     Auswahl(int x, int width) {
@@ -38,10 +37,6 @@ public enum Auswahl {
         return width;
     }
 
-    public List<Auswahl> getAuswahl() {
-        return auswahl;
-    }
-
    public ImageProducer createSource(ImageProducer source) {
        return new FilteredImageSource(
                source,
@@ -49,14 +44,14 @@ public enum Auswahl {
        );
    }
 
-    private void setAuswahl(Auswahl... auswahl) {
-        this.auswahl = Arrays.asList(auswahl);
+    private void setWinsAgainst(Auswahl... winsAgainst) {
+        this.winsAgainst = Arrays.asList(winsAgainst);
     }
 
     public MatchResult matchResult(Auswahl auswahl) {
         if (auswahl == this)
             return MatchResult.Unentschieden;
-        if (this.auswahl.contains(auswahl)){
+        if (this.winsAgainst.contains(auswahl)){
             return MatchResult.Gewonnen;
         }
         return MatchResult.Verloren;
