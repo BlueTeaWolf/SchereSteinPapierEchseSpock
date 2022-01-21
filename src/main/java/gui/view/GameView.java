@@ -1,11 +1,14 @@
+import javax.swing.JPanel;
+
 import game.Controller;
 import game.GameVisitor;
 import game.Player;
 import gui.Gui;
+import gui.image.ImageButton;
+import gui.image.ImageFile;
 
 public class GameView implements View, GameVisitor {
-    private static final ImageIcon icon = new ImageIcon("images/icons.png");
-    private static final IImageProducer imageSource = icon.getImage().getSource();
+    private static final ImageFile IMAGE_FILE = new ImageFile("images/icons.png");
 
     private final Controller controller;
     private final Gui gui;
@@ -24,7 +27,7 @@ public class GameView implements View, GameVisitor {
         panel.add(top(), BorderLayout.PAGE_START);
         JPanel buttons = new JPanel();
         for (Auswahl value : Auswahl.values()) {
-            JButton button = new ImageButton(image(value, imageSource));
+            JButton button = new ImageButton(IMAGE_FILE.image(panel.getToolkit(), value));
             button.addActionListener(e -> controller.generateMove(value));
             buttons.add(button);
         }
