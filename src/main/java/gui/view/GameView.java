@@ -1,5 +1,6 @@
 import game.Controller;
 import game.GameVisitor;
+import game.Player;
 import gui.Gui;
 
 public class GameView implements View, GameVisitor {
@@ -64,5 +65,10 @@ public class GameView implements View, GameVisitor {
                     case Unentschieden -> your.name() + " goes even with " + ai.name();
                 }
         );
+    }
+
+    @Override
+    public void end(Player winner) {
+        gui.setView(new WelcomeView(controller, gui, winner.getType() + " won!"));
     }
 }

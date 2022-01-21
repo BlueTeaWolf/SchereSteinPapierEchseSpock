@@ -7,8 +7,8 @@ public class Controller {
         this.running = running;
     }
 
-    public Game newGame() {
-        Game game = new Game();
+    public Game newGame(int maxRounds) {
+        Game game = new Game(maxRounds);
         setRunning(game);
         return game;
     }
@@ -16,6 +16,6 @@ public class Controller {
     public void generateMove(Auswahl auswahl){
         int zufallsZahl = (int) (Math.random() * 5);
         Auswahl computer = Auswahl.values()[zufallsZahl];
-        game.draft(auswahl, computer);
+        running.draft(auswahl, computer);
     }
 }
