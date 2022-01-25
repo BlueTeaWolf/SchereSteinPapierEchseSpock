@@ -46,7 +46,7 @@ public class Game {
         RoundResult result = new RoundResult(players);
         Collection<Player> winners = result.winners();
         Collection<Player> loosers = result.loosers();
-        visitor.roundComplete(winners, loosers);
+        visitor.roundComplete(result);
         resetRound();
         result.mayRewardPlayers();
         for (Player player : players) {

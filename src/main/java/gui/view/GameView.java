@@ -1,9 +1,6 @@
 package gui.view;
 
-import game.Auswahl;
-import game.Controller;
-import game.GameVisitor;
-import game.Player;
+import game.*;
 import gui.Gui;
 import gui.image.ImageButton;
 import gui.image.TextureFile;
@@ -81,16 +78,20 @@ public class GameView implements View, GameVisitor {
     }
 
     @Override
-    public void roundComplete(Collection<Player> winners, Collection<Player> loosers) {
-        if (loosers.isEmpty()) {
+    public void roundComplete(RoundResult roundResult) {
+        if (roundResult.isDraw()) {
             status.setText("Unenschieden");
             return;
         }
         String text = "";
-        text += winners.stream().map(Player::nameAndAuswahl).collect(Collectors.joining(", "));
-        text += " " + (winners.size() > 1 ? "gewinnen" : "gewinnt") + " gegen ";
-        text += loosers.stream().map(Player::nameAndAuswahl).collect(Collectors.joining(", "));
+        text += formatPlayers(roundResult.winners());
+        text += " " + (roundResult.multipleWinners() ? "gewinnen" : "gewinnt") + " gegen ";
+        text += formatPlayers(roundResult.loosers());
         status.setText(text);
+    }
+
+    private static String formatPlayers(Collection<Player> players) {
+        return players.stream().map(Player::nameAndAuswahl).collect(Collectors.joining(", "));
     }
 
     @Override

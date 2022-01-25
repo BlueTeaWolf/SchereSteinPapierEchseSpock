@@ -31,6 +31,14 @@ public class RoundResult {
         }
     }
 
+    public boolean multipleWinners() {
+        return winners().size() > 1;
+    }
+
+    public boolean isDraw() {
+        return loosers.isEmpty();
+    }
+
     public Collection<Player> winners() {
         return winners;
     }
