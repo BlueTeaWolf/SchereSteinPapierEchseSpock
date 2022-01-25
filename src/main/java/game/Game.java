@@ -43,34 +43,12 @@ public class Game {
     }
 
     public void pushMatchResult() {
-        Map<Player, Integer> winMap = new HashMap<>();
-        int heighestScore = Integer.MIN_VALUE;
-        for (Player player : players) {
-            int score = 0;
-            for (Player opponent : players) {
-                switch (player.getAuswahl().matchResult(opponent.getAuswahl())) {
-                    case Verloren -> score--;
-                    case Gewonnen -> score++;
-                }
-            }
-            if (score > heighestScore) {
-                heighestScore = score;
-            }
-            System.out.println(player.displayName() + " has score " + score);
-            winMap.put(player, score);
-        }
-        Collection<Player> winners = new ArrayList<>();
-        Collection<Player> loosers = new ArrayList<>();
-        for (Map.Entry<Player, Integer> entry : winMap.entrySet()) {
-            (entry.getValue() == heighestScore ? winners : loosers).add(entry.getKey());
-        }
+        RoundResult result = new RoundResult(players);
+        Collection<Player> winners = result.winners();
+        Collection<Player> loosers = result.loosers();
         visitor.roundComplete(winners, loosers);
         resetRound();
-        if (!loosers.isEmpty()) {
-            for (Player winner : winners) {
-                winner.increaseScore();
-            }
-        }
+        result.mayRewardPlayers();
         for (Player player : players) {
             visitor.updateScore(player);
         }
