@@ -2,6 +2,8 @@ package gui.view;
 
 import game.Controller;
 import game.Game;
+import game.PlayerConfiguration;
+import game.PlayerType;
 import gui.Gui;
 import java.awt.Container;
 import java.awt.Font;
@@ -63,25 +65,35 @@ public class WelcomeView implements View {
     @Override
     public void renderInto(Container panel) {
         panel.setLayout(new GridBagLayout());
-        panel.add(text(), new GridArea().height(6).width(2).insets(20, 0, 80, 0));
-        panel.add(new JLabel("Rounds: "), new GridArea().offsetY(7));
-        JFormattedTextField rounds = roundField();
-        panel.add(rounds, new GridArea().offsetY(7));
+        panel.add(text(), new GridArea().height(4).width(2).verticalInsets(20, 80));
+        JFormattedTextField ai = numberField("1");
+        JFormattedTextField player = numberField("1");
+        panel.add(new JLabel("AIs: "), new GridArea().offsetY(5));
+        panel.add(ai, new GridArea().offsetY(5));
+        panel.add(new JLabel("Players: "), new GridArea().offsetY(6));
+        panel.add(player, new GridArea().offsetY(6));
+        panel.add(new JLabel("Rounds: "), new GridArea().offsetY(7).verticalInsets(15, 0));
+        JFormattedTextField rounds = numberField("5");
+        panel.add(rounds, new GridArea().offsetY(7).verticalInsets(15, 0));
         JButton startButton = new JButton(text.equals(WELCOME_TEXT) ? "Spielen" : "Nochmal spielen");
-        startButton.addActionListener(event -> startGame((Integer) rounds.getValue()));
+        startButton.addActionListener(event -> {
+            startGame((Integer) rounds.getValue(), new PlayerConfiguration()
+                    .add(PlayerType.HUMAN, (Integer) player.getValue())
+                    .add(PlayerType.AI, (Integer) ai.getValue()));
+        });
         rounds.addActionListener(event -> startButton.doClick());
         panel.add(startButton, new GridArea().offsetY(8).width(2).verticalInsets(15, 0));
     }
 
-    private JFormattedTextField roundField() {
+    private JFormattedTextField numberField(String def) {
         JFormattedTextField rounds = new JFormattedTextField(roundFormatter());
-        rounds.setText("5");
+        rounds.setText(def);
         rounds.setColumns(15);
         return rounds;
     }
 
-    private void startGame(Integer maxRounds) {
-        Game game = controller.newGame(maxRounds == null ? 3 : maxRounds);
+    private void startGame(Integer maxRounds, PlayerConfiguration configuration) {
+        Game game = controller.newGame(maxRounds == null ? 3 : maxRounds, configuration);
         GameView view = new GameView(controller, gui);
         game.setVisitor(view);
         gui.setView(view);

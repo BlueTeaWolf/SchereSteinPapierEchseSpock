@@ -3,22 +3,15 @@ package gui.view;
 import game.Auswahl;
 import game.Controller;
 import game.GameVisitor;
-import game.MatchResult;
 import game.Player;
 import gui.Gui;
 import gui.image.ImageButton;
 import gui.image.TextureFile;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.GridLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+
+import java.awt.*;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import javax.swing.*;
 
 public class GameView implements View, GameVisitor {
     private static final TextureFile IMAGE_FILE = new TextureFile("images/icons.png");
@@ -60,31 +53,48 @@ public class GameView implements View, GameVisitor {
             component.setFont(new Font("Arial", Font.PLAIN, 22));
             component.setForeground(Color.WHITE);
         }
-        panel.setLayout(new GridLayout(1, 3));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        //panel.setLayout(new FlowLayout());
+        //panel.setLayout(new GridLayout(1, 3));
         return panel;
     }
 
     @Override
+    public void draw(Player player) {
+        updateScore(player);
+    }
+
+    @Override
     public void updateScore(Player player) {
+        String text = "<html>";
+        for (Player member : controller.currentGame().players()) {
+            if (member.getType() == player.getType()) {
+                text += member.nameAndAuswahl() + ": " + member.getScore() + "<br>";
+            }
+        }
+        text = text.substring(0, text.length() - 4);
+        text += "</html>";
         switch (player.getType()) {
-            case HUMAN -> ownScore.setText("Dein Score: " + player.getScore());
-            case AI -> aiScore.setText("Ai Score: " + player.getScore());
+            case HUMAN -> ownScore.setText(text);
+            case AI -> aiScore.setText(text);
         }
     }
 
     @Override
-    public void aiRoll(MatchResult matchResult, Auswahl your, Auswahl ai) {
-        status.setText(
-                switch (matchResult) {
-                    case Verloren -> your.name() + " looses against " + ai.name();
-                    case Gewonnen -> your.name() + " wins against " + ai.name();
-                    case Unentschieden -> your.name() + " goes even with " + ai.name();
-                }
-        );
+    public void roundComplete(Collection<Player> winners, Collection<Player> loosers) {
+        if (loosers.isEmpty()) {
+            status.setText("Unenschieden");
+            return;
+        }
+        String text = "";
+        text += winners.stream().map(Player::nameAndAuswahl).collect(Collectors.joining(", "));
+        text += " " + (winners.size() > 1 ? "gewinnen" : "gewinnt") + " gegen ";
+        text += loosers.stream().map(Player::nameAndAuswahl).collect(Collectors.joining(", "));
+        status.setText(text);
     }
 
     @Override
     public void end(Player winner) {
-        gui.setView(new WelcomeView(controller, gui, winner.getType() + " won!"));
+        gui.setView(new WelcomeView(controller, gui, winner.displayName() + " won!"));
     }
 }

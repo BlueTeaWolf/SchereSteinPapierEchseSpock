@@ -1,39 +1,80 @@
 package game;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.stream.Stream;
+import java.util.*;
 
 public class Game {
     private final int maxRounds;
     private int round;
     private GameVisitor visitor;
-    private final Player[] players = new Player[] {
-            new Player(PlayerType.HUMAN),
-            new Player(PlayerType.AI)
-    };
+    private final Player[] players;
+    private int drafter;
 
-    public Game(int maxRounds) {
+    public Game(int maxRounds, PlayerConfiguration playerConfiguration) {
         this.maxRounds = maxRounds;
+        players = playerConfiguration.build();
+    }
+
+    public Player[] players() {
+        return players;
+    }
+
+    public void advanceDraft(Auswahl auswahl) {
+        Player current = players[drafter];
+        current.setAuswahl(auswahl);
+        visitor.draw(current);
+        drafter++;
+        if (drafter >= players.length) {
+            pushMatchResult();
+        } else if (players[drafter].getType() == PlayerType.AI) {
+            int zufallsZahl = (int) (Math.random() * 5);
+            advanceDraft(Auswahl.values()[zufallsZahl]);
+        }
+    }
+
+    private void resetRound() {
+        drafter = 0;
+        for (Player player : players) {
+            player.setAuswahl(null);
+        }
     }
 
     public void setVisitor(GameVisitor visitor) {
         this.visitor = visitor;
     }
 
-    public void draft(Auswahl player, Auswahl ai) {
-        MatchResult result = player.matchResult(ai);
-        visitor.aiRoll(result, player, ai);
-        pushMatchResult(result);
-    }
-
-    public void pushMatchResult(MatchResult humanWon) {
-        if (humanWon == MatchResult.Unentschieden) {
-            return;
+    public void pushMatchResult() {
+        Map<Player, Integer> winMap = new HashMap<>();
+        int heighestScore = Integer.MIN_VALUE;
+        for (Player player : players) {
+            int score = 0;
+            for (Player opponent : players) {
+                switch (player.getAuswahl().matchResult(opponent.getAuswahl())) {
+                    case Verloren -> score--;
+                    case Gewonnen -> score++;
+                }
+            }
+            if (score > heighestScore) {
+                heighestScore = score;
+            }
+            System.out.println(player.displayName() + " has score " + score);
+            winMap.put(player, score);
         }
-        Player player = players[humanWon == MatchResult.Gewonnen ? 0 : 1];
-        player.increaseScore();
-        visitor.updateScore(player);
+        Collection<Player> winners = new ArrayList<>();
+        Collection<Player> loosers = new ArrayList<>();
+        for (Map.Entry<Player, Integer> entry : winMap.entrySet()) {
+            (entry.getValue() == heighestScore ? winners : loosers).add(entry.getKey());
+        }
+        visitor.roundComplete(winners, loosers);
+        resetRound();
+        if (!loosers.isEmpty()) {
+            for (Player winner : winners) {
+                winner.increaseScore();
+            }
+        }
+        for (Player player : players) {
+            visitor.updateScore(player);
+        }
+
         if (++round > maxRounds) {
             Player winner = currentWinner();
             if (winner != null) {

@@ -7,15 +7,17 @@ public class Controller {
         this.running = running;
     }
 
-    public Game newGame(int maxRounds) {
-        Game game = new Game(maxRounds);
+    public Game newGame(int maxRounds, PlayerConfiguration playerConfiguration) {
+        Game game = new Game(maxRounds, playerConfiguration);
         setRunning(game);
         return game;
     }
 
+    public Game currentGame() {
+        return running;
+    }
+
     public void generateMove(Auswahl auswahl){
-        int zufallsZahl = (int) (Math.random() * 5);
-        Auswahl computer = Auswahl.values()[zufallsZahl];
-        running.draft(auswahl, computer);
+        running.advanceDraft(auswahl);
     }
 }
