@@ -16,8 +16,12 @@ public class RoundResult {
             int score = 0;
             for (Player opponent : players) {
                 switch (player.getAuswahl().matchResult(opponent.getAuswahl())) {
-                    case Verloren -> score--;
-                    case Gewonnen -> score++;
+                    case Verloren:
+                        score--;
+                        break;
+                    case Gewonnen:
+                        score++;
+                        break;
                 }
             }
             if (score > heighestScore) {

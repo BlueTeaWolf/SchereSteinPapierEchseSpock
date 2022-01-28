@@ -72,8 +72,12 @@ public class GameView implements View, GameVisitor {
         text = text.substring(0, text.length() - 4);
         text += "</html>";
         switch (player.getType()) {
-            case HUMAN -> ownScore.setText(text);
-            case AI -> aiScore.setText(text);
+            case HUMAN:
+                ownScore.setText(text);
+                break;
+            case AI:
+                aiScore.setText(text);
+                break;
         }
     }
 

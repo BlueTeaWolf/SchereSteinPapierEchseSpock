@@ -73,6 +73,7 @@ public class WelcomeView implements View {
         panel.add(new JLabel("Players: "), new GridArea().offsetY(6));
         panel.add(player, new GridArea().offsetY(6));
         panel.add(new JLabel("Rounds: "), new GridArea().offsetY(7).verticalInsets(15, 0));
+
         JFormattedTextField rounds = numberField("5");
         panel.add(rounds, new GridArea().offsetY(7).verticalInsets(15, 0));
         JButton startButton = new JButton(text.equals(WELCOME_TEXT) ? "Spielen" : "Nochmal spielen");
