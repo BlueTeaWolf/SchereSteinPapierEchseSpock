@@ -1,89 +1,99 @@
-package game;
+package game
 
-import java.util.*;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.*
+import java.util.function.BiConsumer
 
-public class Game {
-    private final int maxRounds;
-    private int round;
-    private GameVisitor visitor;
-    private final Player[] players;
-    private int drafter;
+class Game(private val maxRounds: Int, playerConfiguration: PlayerConfiguration) {
+    private var round = 0
+    private var visitor: GameVisitor? = null
+    private val players: Array<Player>
+    private var drafter = 0
 
-    public Game(int maxRounds, PlayerConfiguration playerConfiguration) {
-        this.maxRounds = maxRounds;
-        players = playerConfiguration.build();
+    init {
+        players = playerConfiguration.build()
     }
 
-    public Player[] players() {
-        return players;
+    fun players(): Array<Player> {
+        return players
     }
 
-    public void advanceDraft(Auswahl auswahl) {
-        Player current = players[drafter];
-        current.setAuswahl(auswahl);
-        visitor.draw(current);
-        drafter++;
-        if (drafter >= players.length) {
-            pushMatchResult();
-        } else if (players[drafter].getType() == PlayerType.AI) {
-            int zufallsZahl = (int) (Math.random() * 5);
-            advanceDraft(Auswahl.values()[zufallsZahl]);
+    fun advanceDraft(auswahl: Auswahl?) {
+        val current = players[drafter]
+        current!!.auswahl = auswahl
+        visitor!!.draw(current)
+        drafter++
+        if (drafter >= players.size) {
+            pushMatchResult()
+        } else if (players[drafter]?.type == PlayerType.AI) {
+            val zufallsZahl = (Math.random() * 5).toInt()
+            advanceDraft(Auswahl.values()[zufallsZahl])
         }
     }
 
-    private void resetRound() {
-        drafter = 0;
-        for (Player player : players) {
-            player.setAuswahl(null);
+    private fun resetRound() {
+        drafter = 0
+        for (player in players) {
+            player?.auswahl = null
         }
     }
 
-    public void setVisitor(GameVisitor visitor) {
-        this.visitor = visitor;
+    fun setVisitor(visitor: GameVisitor?) {
+        this.visitor = visitor
     }
 
-    public void pushMatchResult() {
-        RoundResult result = new RoundResult(players);
-        Collection<Player> winners = result.winners();
-        Collection<Player> loosers = result.loosers();
-        visitor.roundComplete(result);
-        resetRound();
-        result.mayRewardPlayers();
-        for (Player player : players) {
-            visitor.updateScore(player);
+    fun pushMatchResult() {
+        val result = RoundResult(players)
+        val winners = result.winners()
+        val loosers = result.loosers()
+        visitor!!.roundComplete(result)
+        resetRound()
+        result.mayRewardPlayers()
+        for (player in players!!) {
+            visitor!!.updateScore(player)
         }
-
         if (++round > maxRounds) {
-            Player winner = currentWinner();
+            val winner = currentWinner()
             if (winner != null) {
-                visitor.end(winner);
+                visitor!!.end(winner)
             }
         }
     }
 
-    private Player currentWinner() {
-        Player winner = Arrays.stream(players)
-            .max(Comparator.comparingInt(Player::getScore))
-            .orElseThrow(IllegalStateException::new); /* unreachable */
-       if (checkForMultipleWinners(winner)) {
-           return null;
-       }
-        return winner;
+    private fun currentWinner(): Player? {
+        val winner = Arrays.stream(players)
+                .max(Comparator.comparingInt { obj: Player -> obj.score })
+                .orElseThrow { IllegalStateException() } /* unreachable */
+        return if (checkForMultipleWinners(winner)) {
+            null
+        } else winner
     }
 
-    private boolean checkForMultipleWinners(Player oneWinner) {
-        int winners = 0;    
-        for (Player player : players) {
-            if (player.getScore() == oneWinner.getScore() && winners++ == 1) {
-                return true;
+    private fun checkForMultipleWinners(oneWinner: Player?): Boolean {
+        var winners = 0
+        for (player in players) {
+            if (player.score == oneWinner?.score && winners++ == 1) {
+                return true
             }
         }
-        return false;
+        return false
     }
 
-    public void start() {
-        for (Player player : players) {
-            visitor.updateScore(player);
+    fun start() {
+        for (player in players!!) {
+            visitor!!.updateScore(player)
         }
     }
 }

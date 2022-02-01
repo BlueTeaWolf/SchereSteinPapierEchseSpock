@@ -1,23 +1,41 @@
-package game;
+package game
 
-public class Controller {
-    private Game running;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.Arrays
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.Locale
+import java.util.HashMap
+import java.util.EnumMap
+import java.util.function.BiConsumer
 
-    private void setRunning(Game running) {
-        this.running = running;
+class Controller {
+    private var running: Game? = null
+    private fun setRunning(running: Game) {
+        this.running = running
     }
 
-    public Game newGame(int maxRounds, PlayerConfiguration playerConfiguration) {
-        Game game = new Game(maxRounds, playerConfiguration);
-        setRunning(game);
-        return game;
+    fun newGame(maxRounds: Int, playerConfiguration: PlayerConfiguration): Game {
+        val game = Game(maxRounds, playerConfiguration)
+        setRunning(game)
+        return game
     }
 
-    public Game currentGame() {
-        return running;
+    fun currentGame(): Game? {
+        return running
     }
 
-    public void generateMove(Auswahl auswahl){
-        running.advanceDraft(auswahl);
+    fun generateMove(auswahl: Auswahl?) {
+        running!!.advanceDraft(auswahl)
     }
 }

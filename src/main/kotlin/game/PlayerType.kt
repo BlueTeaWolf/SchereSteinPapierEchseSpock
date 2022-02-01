@@ -1,14 +1,30 @@
-package game;
+package game
 
-import java.util.Locale;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.Arrays
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.Locale
+import java.util.HashMap
+import java.util.EnumMap
+import java.util.function.BiConsumer
 
-public enum PlayerType {
-    HUMAN,
-    AI;
+enum class PlayerType {
+    HUMAN, AI;
 
-    public String displayName() {
-        String name = name();
-        return Character.toUpperCase(name.charAt(0))
-                + name.substring(1).toLowerCase(Locale.ROOT);
+    fun displayName(): String {
+        val name = name
+        return Character.toUpperCase(name[0])
+                .toString() + name.substring(1).toLowerCase(Locale.ROOT)
     }
 }

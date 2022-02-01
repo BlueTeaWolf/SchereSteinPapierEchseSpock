@@ -1,31 +1,44 @@
-package game;
+package game
 
-import java.util.EnumMap;
-import java.util.Map;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.*
+import java.util.function.BiConsumer
 
-public class PlayerConfiguration {
-    private final Map<PlayerType, Integer> players = new EnumMap<PlayerType, Integer>(PlayerType.class);
-    private int offset;
-    private Player[] array;
+class PlayerConfiguration {
+    private val players: MutableMap<PlayerType, Int> = EnumMap(PlayerType::class.java)
+    private var offset = 0
+    private lateinit var array: Array<Player?>;
 
-    public PlayerConfiguration add(PlayerType type, int count) {
-        players.put(type, count);
-        return this;
+    fun add(type: PlayerType, count: Int): PlayerConfiguration {
+        players[type] = count
+        return this
     }
 
-    private int total() {
-        return players.values().stream().mapToInt(Integer::intValue).sum();
+    private fun total(): Int {
+        return players.values.sum()
     }
 
-    private void fillType(PlayerType type, int count) {
-        for (int i = 0; i < count; i++) {
-            array[offset++] = new Player(type, i);
+    private fun fillType(type: PlayerType, count: Int) {
+        for (i in 0 until count) {
+            array[offset++] = Player(type, i)
         }
     }
 
-    public Player[] build() {
-        array = new Player[total()];
-        players.forEach(this::fillType);
-        return array;
+    fun build(): Array<Player> {
+        array = arrayOfNulls(total())
+        players.forEach { (type, count) -> fillType(type, count) }
+        return array.requireNoNulls()
     }
 }

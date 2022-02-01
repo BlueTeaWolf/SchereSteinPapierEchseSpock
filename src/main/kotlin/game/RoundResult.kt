@@ -1,60 +1,65 @@
-package game;
+package game
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.*
+import java.util.function.BiConsumer
 
-public class RoundResult {
-    private final Collection<Player> winners = new ArrayList<>();
-    private final Collection<Player> loosers = new ArrayList<>();
+class RoundResult(players: Array<Player>?) {
+    private val winners: MutableCollection<Player> = ArrayList()
+    private val loosers: MutableCollection<Player> = ArrayList()
 
-    public RoundResult(Player[] players) {
-        Map<Player, Integer> winMap = new HashMap<>();
-        int heighestScore = Integer.MIN_VALUE;
-        for (Player player : players) {
-            int score = 0;
-            for (Player opponent : players) {
-                switch (player.getAuswahl().matchResult(opponent.getAuswahl())) {
-                    case Verloren:
-                        score--;
-                        break;
-                    case Gewonnen:
-                        score++;
-                        break;
+    init {
+        val winMap: MutableMap<Player, Int> = HashMap()
+        var heighestScore = Int.MIN_VALUE
+        for (player in players!!) {
+            var score = 0
+            for (opponent in players) {
+                when (player.auswahl?.matchResult(opponent.auswahl)) {
+                    MatchResult.Verloren -> score--
+                    MatchResult.Gewonnen -> score++
                 }
             }
             if (score > heighestScore) {
-                heighestScore = score;
+                heighestScore = score
             }
-            winMap.put(player, score);
+            winMap[player] = score
         }
-
-        for (Map.Entry<Player, Integer> entry : winMap.entrySet()) {
-            (entry.getValue() == heighestScore ? winners : loosers).add(entry.getKey());
+        for ((key, value) in winMap) {
+            (if (value == heighestScore) winners else loosers).add(key)
         }
     }
 
-    public boolean multipleWinners() {
-        return winners().size() > 1;
+    fun multipleWinners(): Boolean {
+        return winners().size > 1
     }
 
-    public boolean isDraw() {
-        return loosers.isEmpty();
+    val isDraw: Boolean
+        get() = loosers.isEmpty()
+
+    fun winners(): Collection<Player> {
+        return winners
     }
 
-    public Collection<Player> winners() {
-        return winners;
+    fun loosers(): Collection<Player> {
+        return loosers
     }
 
-    public Collection<Player> loosers() {
-        return loosers;
-    }
-
-    public void mayRewardPlayers() {
+    fun mayRewardPlayers() {
         if (!loosers.isEmpty()) {
-            for (Player winner : winners) {
-                winner.increaseScore();
+            for (winner in winners) {
+                winner!!.increaseScore()
             }
         }
     }

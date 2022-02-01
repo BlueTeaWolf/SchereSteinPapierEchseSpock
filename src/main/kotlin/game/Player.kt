@@ -1,44 +1,40 @@
-package game;
+package game
 
-public class Player {
-    private final PlayerType type;
-    private final int localId;
-    private int score;
-    private Auswahl auswahl;
+import game.PlayerConfiguration
+import game.GameVisitor
+import game.Player
+import game.Auswahl
+import game.PlayerType
+import game.RoundResult
+import java.util.Arrays
+import java.util.function.ToIntFunction
+import java.lang.IllegalStateException
+import java.util.function.Supplier
+import java.awt.image.ImageProducer
+import java.awt.image.FilteredImageSource
+import java.awt.image.CropImageFilter
+import game.Game
+import java.util.Locale
+import java.util.HashMap
+import java.util.EnumMap
+import java.util.function.BiConsumer
 
-    public Player(PlayerType type, int localId) {
-        this.type = type;
-        this.localId = localId;
+class Player(val type: PlayerType, private val localId: Int) {
+    var score = 0
+        private set
+    var auswahl: Auswahl? = null
+
+    fun nameAndAuswahl(): String {
+        return if (auswahl == null) {
+            displayName()
+        } else displayName() + " (" + auswahl + ")"
     }
 
-    public Auswahl getAuswahl() {
-        return auswahl;
+    fun displayName(): String {
+        return type.displayName() + " " + (localId + 1)
     }
 
-    public void setAuswahl(Auswahl auswahl) {
-        this.auswahl = auswahl;
-    }
-
-    public String nameAndAuswahl() {
-        if (auswahl == null) {
-            return displayName();
-        }
-        return displayName() + " (" + auswahl + ")";
-    }
-
-    public String displayName() {
-        return type.displayName() + " " + (localId + 1);
-    }
-
-    public PlayerType getType() {
-        return type;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void increaseScore() {
-        score++;
+    fun increaseScore() {
+        score++
     }
 }
